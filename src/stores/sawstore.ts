@@ -3,8 +3,6 @@ import { Store } from "./store";
 import { Alternative } from "~/types/alternative";
 import { Criteria, Type } from "~/types/criteria";
 
-
-
 class Saw {
     private readonly alternatives: Array<Alternative> = []
     private criteria: Array<Criteria> = []

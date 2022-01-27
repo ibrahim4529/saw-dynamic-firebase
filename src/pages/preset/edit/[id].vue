@@ -6,15 +6,21 @@
             <n-col :span="10">
                 <div>
                     <h2>Data Preset</h2>
-                    <n-space vertical>
-                        <n-input placeholder="Preset Name" type="text" v-model:value="preset.name" />
-                        <n-input
-                            v-model:value="preset.description"
-                            type="textarea"
-                            placeholder="Description preset: eg: Preset for comparing phone by spec"
-                        />
-                        <n-button type="primary" size="medium" @click="saveData">Save Preset</n-button>
-                    </n-space>
+                    <n-form :model="preset" :rules="rules" size="medium" ref="formRef">
+                        <n-form-item label="Preset Name" path="name">
+                            <n-input v-model:value="preset.name" placeholder="Input Name" />
+                        </n-form-item>
+                        <n-form-item label="Preset Description" path="description">
+                            <n-input
+                                v-model:value="preset.description"
+                                placeholder="Input Description"
+                                type="textarea"
+                            />
+                        </n-form-item>
+                        <n-form-item>
+                            <n-button @click="saveData">Save Preset</n-button>
+                        </n-form-item>
+                    </n-form>
                 </div>
             </n-col>
             <n-col :span="14">
@@ -52,10 +58,13 @@
 import { onMounted, ref } from 'vue';
 import { Type } from '~/types/criteria';
 import { presetDb } from '~/composable/preset';
-const message = useMessage()
-const loading = ref(false)
 import { Preset } from '~/types/preset';
 import { useMessage } from 'naive-ui';
+
+
+const message = useMessage()
+const loading = ref(false)
+const formRef = ref()
 const props = defineProps<{ id: string }>()
 const preset = ref<Preset>({
     name: '',
@@ -68,9 +77,23 @@ onMounted(() => {
     const presetDoc = presetDb.doc(props.id)
     presetDoc.get().then((doc) => {
         preset.value = doc.data() as Preset
-        loading.value= false
+        loading.value = false
     })
 })
+
+const rules = {
+    name: {
+        required: true,
+        message: 'Please input preset name',
+        trigger: 'blur'
+    },
+    description: {
+        required: true,
+        message: 'Please input preset description',
+        trigger: 'blur'
+    }
+}
+
 const options = [
     {
         label: "BENEFIT",
@@ -81,11 +104,27 @@ const options = [
         value: Type.COST
     }
 ]
-
 const saveData = () => {
-    presetDb.doc(props.id).update(preset.value).then((data) => {
-        message.success("Success Edit preset");
+    formRef.value.validate((errors: any) => {
+        if (!errors) {
+            loading.value = true
+            let sumOfWeight = preset.value.criteria!.reduce((a, b) => a + b.weight, 0)
+            if ((preset.value.criteria!.length < 1) || (sumOfWeight != 100)) {
+                message.error("Criteria must have 100 of total weight")
+                loading.value = false
+            }
+            else {
+                presetDb.doc(props.id).update(preset.value).then((data) => {
+                    loading.value = false
+                    message.success("Success Edit preset");
+                })
+            }
+        } else {
+            console.log(errors)
+            message.error('Invalid')
+        }
     })
+
 }
 
 const onCreate = () => {

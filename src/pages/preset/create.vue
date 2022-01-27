@@ -1,4 +1,5 @@
 <template>
+<n-spin :show="loading">
     <h3>Create Preset</h3>
     <n-divider />
     <n-row gutter="12">
@@ -47,6 +48,7 @@
             </div>
         </n-col>
     </n-row>
+    </n-spin>
 </template>
 
 <script lang="ts" setup>
@@ -57,6 +59,7 @@ import { useMessage } from 'naive-ui'
 import { presetDb } from '~/composable/preset';
 const message = useMessage()
 const formRef = ref()
+const loading = ref(false)
 const presetRef = ref<Preset>({
     id: '',
     criteria: [],
@@ -90,13 +93,16 @@ const saveData = (e: any) => {
     e.preventDefault()
     formRef.value.validate((errors: any) => {
         if (!errors) {
+            loading.value = true
             let sumOfWeight = presetRef.value.criteria!.reduce((a, b) => a + b.weight, 0)
             if ((presetRef.value.criteria!.length < 1) || (sumOfWeight != 100)) {
                 message.error("Criteria must have 100 of total weight")
+                loading.value = false
             }
             else {
                 presetDb.add(presetRef.value).then(() => {
                     message.success("Success add a preset")
+                    loading.value = false
                 })
             }
         } else {
