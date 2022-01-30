@@ -49,6 +49,9 @@ class Saw {
         const columns = this.getMinMax();
         this.alternatives.forEach((alt) => {
             let map = alt.values.map(((value, index) => {
+                if(value === 0){
+                    value = 1;
+                }
                 if (this.criteria[index].type === Type.BENEFIT) {
                     return value / columns[index]
                 } else {
