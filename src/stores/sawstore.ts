@@ -11,6 +11,7 @@ class Saw {
         this.alternatives = alternatives
         this.criteria = criteria
     }
+
     private switchMatrix(): Array<Array<number>> {
         const result: Array<Array<number>> = [];
 
@@ -49,9 +50,6 @@ class Saw {
         const columns = this.getMinMax();
         this.alternatives.forEach((alt) => {
             let map = alt.values.map(((value, index) => {
-                if(value === 0){
-                    value = 1;
-                }
                 if (this.criteria[index].type === Type.BENEFIT) {
                     return value / columns[index]
                 } else {
@@ -62,11 +60,11 @@ class Saw {
         })
         return results
     }
+
     private weightedNorm(): Array<number> {
         const results: Array<number> = []
         const weight = this.weightToPercent();
         const norm = this.normalization();
-
         norm.forEach((value) => {
             let map: number = 0;
             value.map(((value1, index) => (map += weight[index] * value1)));
@@ -74,6 +72,7 @@ class Saw {
         })
         return results
     }
+
     private calculateRank(): Array<Rank> {
         const wn = this.weightedNorm();
         const _an = this.alternatives
@@ -92,11 +91,13 @@ class Saw {
         return this.calculateRank();
     }
 }
+
 interface SawObject {
     saw: Saw | null
     ranks: Array<Rank>
     isProcess: boolean
 }
+
 export const saw = (
     alternatives: Array<Alternative>,
     criteria: Array<Criteria>
@@ -111,6 +112,7 @@ class SawStore extends Store<SawObject>{
     setSaw(saw: Saw) {
         this.state.saw = saw;
     }
+
     protected data(): SawObject {
         return {
             ranks: [],

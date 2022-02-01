@@ -101,8 +101,8 @@ const saveData = (e: any) => {
             }
             else {
                 presetDb.add(presetRef.value).then(() => {
-                    message.success("Success add a preset")
                     loading.value = false
+                    message.success("Success add a preset")
                 })
             }
         } else {
