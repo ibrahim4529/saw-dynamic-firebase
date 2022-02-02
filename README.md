@@ -21,7 +21,7 @@ SAW (Simple Adaptive Weighting).
 pnpm install
 ```
 ```bash
-npm install
+npm install 
 ```
 3. Run On Bash
 ```bash
