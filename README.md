@@ -13,3 +13,5 @@ SAW (Simple Addictive Weighting).
 - Firebase
 - Naive UI
 - Typescript
+
+### Run This Project
